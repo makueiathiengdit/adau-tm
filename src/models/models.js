@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const UserSchema = mongoose.Schema(
+const UserSchema = Schema(
   {
     username: {
       type: String,
@@ -46,9 +46,13 @@ const UserSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const companyOwnerSchema = new mongoose.Schema({
-  first_name: { type: String, required: true }, // Not nullable in Mongoose
-  last_name: { type: String, required: true }, // Not nullable in Mongoose
+const companyOwnerSchema = new Schema({});
+const CompanySchema = new Schema({
+  name: { type: String },
+  description: { type: String, maxlength: 100 },
+  address_street: { type: String },
+  address_city: { type: String },
+  address_country: { type: String },
   mobile_number: {
     type: String,
     validate: {
@@ -56,511 +60,320 @@ const companyOwnerSchema = new mongoose.Schema({
       message: "Mobile number must be at least 10 characters long",
     },
   },
-  emailAddress: {
+  logo: { type: String },
+  owner_id: { type: Number, default: null },
+  branches: [{ type: Schema.Types.ObjectId, ref: "Branch" }],
+  is_active: { type: Boolean, default: true },
+  date_created: { type: Date, default: Date.now },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
+});
+
+const BranchSchema = new Schema({
+  branch_id: { type: Number },
+  name: { type: String },
+  address_street: { type: String },
+  address_city: { type: String },
+  address_country: { type: String },
+  mobile_number: {
+    type: String,
+    validate: {
+      validator: validateMobileNumber,
+      message: "Mobile number must be at least 10 characters long",
+    },
+  },
+  company_id: { type: Schema.Types.ObjectId, ref: "Company", required: true },
+  cash_accounts: [{ type: Schema.Types.ObjectId, ref: "CashAccount" }],
+  mobile_money_accounts: [
+    { type: Schema.Types.ObjectId, ref: "MobileMoneyAccount" },
+  ],
+  branch_manager_id: { type: Number },
+  is_closed: { type: Boolean, default: false },
+  date_created: { type: Date, default: Date.now },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
+});
+
+const EmployeeSchema = new Schema({
+  user_id: { type: String },
+  employee_id: { type: Number, required: true },
+  first_name: {
+    type: String,
+    validate: {
+      validator: validateName,
+      message:
+        "First name should be 2-30 characters long and cannot contain numbers or other special symbols",
+    },
+  },
+  last_name: {
+    type: String,
+    validate: {
+      validator: validateName,
+      message:
+        "Last name should be 2-30 characters long and cannot contain numbers or other special symbols",
+    },
+  },
+  gender: { type: String },
+  email: {
     type: String,
     validate: {
       validator: validateEmail,
       message: "Invalid email address",
     },
   },
-  city: String,
-  country: String,
-  dateCreated: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  lastModified: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  isSynched: { type: Boolean, default: false },
-});
-
-const companySchema = new mongoose.Schema({
-  name: String,
-  description: { type: String, maxlength: 100 }, // Limit description length
-  address: {
-    street: String,
-    city: String,
-    country: String,
-  },
-  mobileNumber: {
-    type: String,
-    validate: {
-      validator: validateMobileNumber,
-      message: "Mobile number must be at least 10 characters long",
-    },
-  },
-  logo: String,
-  ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyOwner" }, // Reference to CompanyOwner model
-  branches: [{ type: mongoose.Schema.Types.ObjectId, ref: "Branch" }], // Array of references to Branch model
-  isActive: { type: Boolean, default: true },
-  dateCreated: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  lastModified: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  isSynched: { type: Boolean, default: false },
-});
-
-const branchSchema = new mongoose.Schema({
-  name: String,
-  address: {
-    // Combine address fields into a nested object
-    street: String,
-    city: String,
-    country: String,
-  },
-  mobileNumber: {
-    type: String,
-    validate: {
-      validator: validateMobileNumber,
-      message: "Mobile number must be at least 10 characters long",
-    },
-  },
-  companyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Company",
-    required: true,
-  }, // Require companyId
-  cashAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: "CashAccount" }], // Array of references to CashAccount model
-  mobileMoneyAccounts: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "MobileMoneyAccount" },
-  ], // Array of references to MobileMoneyAccount model
-  branchManagerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Assuming branchManagerId refers to a User model
-  isClosed: { type: Boolean, default: false },
-  dateCreated: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  lastModified: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  isSynched: { type: Boolean, default: false },
-});
-
-const employeeSchema = new mongoose.Schema({
-  userId: String, // Assuming user_id refers to a separate user login system
-  employeeId: { type: Number, required: true }, // Make employeeId unique
-  firstName: {
-    type: String,
-    required: true,
-    validate: {
-      validator: validateName,
-      message:
-        "First name should be 2-30 characters and contain only letters, hyphens, and spaces",
-    },
-    set: titleCase, // Apply title case transformation on assignment
-  },
-  lastName: {
-    type: String,
-    required: true,
-    validate: {
-      validator: validateName,
-      message:
-        "Last name should be 2-30 characters and contain only letters, hyphens, and spaces",
-    },
-    set: titleCase, // Apply title case transformation on assignment
-  },
-  gender: String,
-  email: {
-    type: String,
-    required: true,
-    validate: { validator: validateEmail, message: "Invalid email address" },
-  },
-  address: {
-    // Combine address fields into a nested object
-    street: String,
-    city: String,
-    country: String,
-  },
+  address_street: { type: String },
+  address_city: { type: String },
+  address_country: { type: String },
   role: { type: String, default: "EMPLOYEE" },
-  mobileNumber: {
+  mobile_number: {
     type: String,
     validate: {
       validator: validateMobileNumber,
       message: "Mobile number must be at least 10 characters long",
     },
   },
-  dateCreated: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  branchId: { type: mongoose.Schema.Types.ObjectId, ref: "Branch" },
-  isBanned: { type: Boolean, default: false },
-  lastModified: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  isSynched: { type: Boolean, default: false },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
+  date_created: { type: Date, default: Date.now },
+  branch_id: { type: Schema.Types.ObjectId, ref: "Branch", required: false },
+  is_banned: { type: Boolean, default: false },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
+  company_id: { type: Schema.Types.ObjectId, ref: "Company" },
 });
 
-const currencySchema = new mongoose.Schema({
-  shortName: {
-    type: String,
-    required: true,
-    maxlength: 3,
-    validate: {
-      validator: validateShortName,
-      message: "Short name must be 3 characters long",
-    },
-  },
-  fullName: {
-    type: String,
-    required: true,
-    minlength: 2,
-    validate: {
-      validator: validateFullName,
-      message: "Full name must be at least 2 characters long",
-    },
-  },
-  country: String,
-  dateCreated: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  lastModified: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  isSynched: { type: Boolean, default: false },
+const CurrencySchema = new Schema({
+  short_name: { type: String, maxlength: 3 },
+  full_name: { type: String, minlength: 2 },
+  country: { type: String, required: false },
+  date_created: { type: Date, default: Date.now },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
 });
 
-const cashAccountSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    validate: {
-      validator: validateName,
-      message: "Name should be at least 2 characters long",
-    },
-    set: toUpper, // Apply uppercase transformation on assignment
-  },
-  accountNumber: { type: String, required: true, unique: true }, // Ensure unique account numbers
-  accountBalance: {
+const CashAccountSchema = new Schema({
+  account_id: { type: Number },
+  name: { type: String, minlength: 2 },
+  account_number: { type: String, default: generate_account_number },
+  account_balance: {
     type: Number,
-    required: true,
-    default: 0,
+    default: 0.0,
     validate: {
       validator: validateBalance,
       message: "Amount cannot be less than 0",
     },
   },
-  branchId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Branch",
-    required: true,
-  },
-  currency: { type: String, required: true },
-  dateCreated: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  isActive: { type: Boolean, default: true },
-  lastModified: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  isSynched: { type: Boolean, default: false },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
+  branch_id: { type: Schema.Types.ObjectId, ref: "Branch" },
+  currency: { type: String },
+  date_created: { type: Date, default: Date.now },
+  is_active: { type: Boolean, default: true },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
+  company_id: { type: Schema.Types.ObjectId, ref: "Company" },
 });
 
-const mobileMoneyServiceProviderSchema = new mongoose.Schema({
-  shortName: { type: String, required: true },
-  fullName: {
-    type: String,
-    required: true,
-    minlength: 2,
-    validate: {
-      validator: validateName,
-      message: "Name should be at least 2 characters long",
-    },
-    set: toUpper, // Apply uppercase transformation on assignment
-  },
-  countryOfOrigin: { type: String, maxlength: 50 },
-  isClosed: { type: Boolean, default: false },
-  dateCreated: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  lastModified: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  isSynched: { type: Boolean, default: false },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
+const mobileMoneyServiceProviderSchema = new Schema({
+  msp_id: { type: Number },
+  short_name: { type: String },
+  full_name: { type: String, minlength: 2 },
+  country_of_origin: { type: String, maxlength: 50 },
+  is_closed: { type: Boolean, default: false },
+  date_created: { type: Date, default: Date.now },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
+  company_id: { type: Schema.Types.ObjectId, ref: "Company" },
 });
 
-const mobileMoneyAccountSchema = new mongoose.Schema({
+const MobileMoneyAccountSchema = new Schema({
+  account_id: { type: Number },
   name: { type: String, maxlength: 50 },
-  mobileMoneyServiceProvider: { type: String, required: true },
-  accountNumber: {
+  mobile_money_provider: { type: String, required: true },
+  account_number: {
     type: String,
     required: true,
     validate: {
-      validator: validateAccountNumber,
-      message: "Account number is required",
+      validator: validateMobileNumber,
+      message: "Mobile number must be at least 10 characters long",
     },
-  }, // Custom validation for required field
-  accountBalance: {
+  },
+  account_balance: {
     type: Number,
-    required: true,
-    default: 0,
+    default: 0.0,
     validate: {
       validator: validateBalance,
       message: "Amount cannot be less than 0",
     },
   },
-  branchId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Branch",
-    required: true,
-  },
+  branch_id: { type: Schema.Types.ObjectId, ref: "Branch", required: true },
   currency: { type: String, required: true },
-  isActive: { type: Boolean, default: true },
-  dateCreated: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  lastModified: { type: Date, default: Date.now }, // Use Date instead of DateTime
-  isSynched: { type: Boolean, default: false },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
+  is_active: { type: Boolean, default: true },
+  date_created: { type: Date, default: Date.now },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
+  company_id: { type: Schema.Types.ObjectId, ref: "Company" },
 });
 
-const cashTransactionSchema = new mongoose.Schema({
-  transactionId: { type: String, required: true },
-  // Sending info
-  senderName: {
-    type: String,
-    required: true,
-    validate: { validator: validateName, message: "Invalid name" },
-  },
-  senderNumber: {
+const TransactionStatus = {
+  SUCCESS: "SUCCESS",
+  FAILED: "FAILED",
+  PENDING: "PENDING",
+  COMPLETED: "COMPLETED",
+  SENT: "SENT",
+};
+
+const CashTransactionSchema = new Schema({
+  transaction_id: { type: String, default: generate_id, maxlength: 15 },
+  sender_name: { type: String, required: true, minlength: 2, maxlength: 30 },
+  sender_number: {
     type: String,
     validate: {
-      validator: validateMobileNumber,
+      validator: function (value) {
+        return value && value.length >= 10;
+      },
       message: "Mobile number must be at least 10 characters long",
     },
   },
-  amountSent: {
-    type: Number,
-    required: true,
-    validate: {
-      validator: validateAmount,
-      message: "Amount cannot be less than 1",
-    },
-  },
-  commissionRate: { type: Number },
+  amount_sent: { type: Number, required: true, min: 1 },
+  commission_rate: { type: Number },
   commission: { type: Number },
-  sendingBranch: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Branch",
-    required: true,
-  },
-  currencySent: { type: String, required: true },
-  dateSent: { type: Date, default: Date.now },
-  sendingBranchOfficerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee",
-    required: true,
-  },
-  sendingAccountNumber: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "CashAccount",
-    required: true,
-  },
-  status: { type: String, default: "SENT" },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
-  // Receiving info
-  receiverName: {
+  sending_branch: { type: Schema.Types.ObjectId, ref: "Branch" },
+  currency_sent: { type: String },
+  date_sent: { type: Date, default: Date.now },
+  sending_branch_officer_id: { type: Schema.Types.ObjectId, ref: "Employee" },
+  sending_account_number: { type: Schema.Types.ObjectId, ref: "CashAccount" },
+  status: {
     type: String,
-    required: true,
-    validate: { validator: validateName, message: "Invalid name" },
+    default: TransactionStatus.SENT,
+    enum: Object.values(TransactionStatus),
   },
-  receiverNumber: {
+  company_id: { type: Schema.Types.ObjectId, ref: "Company" },
+  receiver_name: { type: String, required: true, minlength: 2, maxlength: 30 },
+  receiver_number: {
     type: String,
     validate: {
       validator: validateMobileNumber,
       message: "Mobile number must be at least 10 characters long",
     },
   },
-  receivingBranch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch" },
-  amountPaidout: {
-    type: Number,
-    validate: {
-      validator: validateAmount,
-      message: "Amount cannot be negative",
-    },
-  },
-  currencyPaidout: { type: String },
-  datePaidout: { type: Date },
-  receivingBranchOfficerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee",
-  },
-  receivingAccountNumber: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "CashAccount",
-  },
-  lastModified: { type: Date, default: Date.now },
-  isDeleted: { type: Boolean, default: false },
-  isSynched: { type: Boolean, default: false },
+  receiving_branch: { type: Schema.Types.ObjectId, ref: "Branch" },
+  amount_paidout: { type: Number, min: 0 },
+  currency_paidout: { type: String },
+  date_paidout: { type: Date },
+  receiving_branch_officer_id: { type: Schema.Types.ObjectId, ref: "Employee" },
+  receiving_account_number: { type: Schema.Types.ObjectId, ref: "CashAccount" },
+  last_modified: { type: Date, default: Date.now },
+  is_deleted: { type: Boolean, default: false },
+  is_synched: { type: Boolean, default: false },
 });
 
-const mobileMoneyTransactionSchema = new mongoose.Schema({
-  transactionId: { type: String, required: true },
-  mobileMoneyServiceProvider: { type: String }, // Optional field
-  mobileMoneyAccount: {
-    type: mongoose.Schema.Types.ObjectId,
+const MobileMoneyTransactionSchema = new Schema({
+  transaction_id: { type: String, default: generate_id, maxlength: 15 },
+  mobile_money_provider: { type: String },
+  mobile_money_account: {
+    type: Schema.Types.ObjectId,
     ref: "MobileMoneyAccount",
-    required: true,
   },
-  senderName: {
+  sender_name: { type: String, minlength: 2, maxlength: 30 },
+  receiver_name: { type: String, required: true, minlength: 2, maxlength: 30 },
+  receiver_mobile_money_number: {
     type: String,
-    validate: { validator: validateName, message: "Invalid name" },
-  },
-  receiverName: {
-    type: String,
-    required: true,
-    validate: { validator: validateName, message: "Invalid name" },
-  },
-  receiverMobileMoneyNumber: {
-    type: String,
-    required: true,
     validate: {
       validator: validateMobileNumber,
       message: "Mobile number must be at least 10 characters long",
     },
   },
-  receiverLocation: { type: String }, // Optional field
-  amountSent: {
-    type: Number,
-    required: true,
-    validate: {
-      validator: validateAmount,
-      message: "Amount cannot be less than 1",
-    },
-  },
-  commissionRate: { type: Number },
-  commission: { type: Number, default: 0 },
-  sendingBranchId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Branch",
-    required: true,
-  },
-  currencySent: { type: String },
-  dateSent: { type: Date, default: Date.now },
-  sendingBranchOfficerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee",
-  },
-  confirmationCode: {
+  receiver_location: { type: String, maxlength: 30 },
+  amount_sent: { type: Number },
+  commission_rate: { type: Number },
+  commission: { type: Number, default: 0.0 },
+  sending_branch_id: { type: Schema.Types.ObjectId, ref: "Branch" },
+  currency_sent: { type: String },
+  date_sent: { type: Date, default: Date.now },
+  sending_branch_officer_id: { type: Schema.Types.ObjectId, ref: "Employee" },
+  confirmation_code: {
     type: String,
-    required: true,
     validate: {
-      validator: validateCode,
+      validator: function (value) {
+        return value && value.length >= 5;
+      },
       message: "Confirmation Code is Invalid",
     },
   },
-  isDeleted: { type: Boolean, default: false },
-  lastModified: { type: Date, nullable: true },
-  isSynched: { type: Boolean, default: false },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
+  is_deleted: { type: Boolean, default: false },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
+  company_id: { type: Schema.Types.ObjectId, ref: "Company" },
 });
 
-const loanSchema = new mongoose.Schema({
-  loanId: { type: Number, required: true }, // Assuming loan_id is auto-generated elsewhere
-  surname: {
-    type: String,
-    required: true,
-    validate: { validator: validateName, message: "Invalid name" },
-  },
-  firstName: {
-    type: String,
-    required: true,
-    validate: { validator: validateName, message: "Invalid name" },
-  },
-  lastName: {
-    type: String,
-    validate: { validator: validateName, message: "Invalid name" },
-  },
+const LoanSchema = new Schema({
+  loan_id: { type: Number, required: true },
+  surname: { type: String, minlength: 2, maxlength: 30 },
+  first_name: { type: String, minlength: 2, maxlength: 30 },
+  last_name: { type: String, minlength: 2, maxlength: 30 },
   gender: { type: String },
-  dateOfBirth: {
-    type: Date,
-    required: true,
-    validate: {
-      validator: validateDateOfBirth,
-      message: "Invalid date of birth or ineligible for loan",
-    },
-  },
-  maritalStatus: { type: String },
-  phoneNumber: {
+  date_of_birth: { type: Date },
+  marital_status: { type: String },
+  mobile_number: {
     type: String,
-    required: true,
     validate: {
-      validator: validateMobileNumber,
+      validator: function (value) {
+        return value && value.length >= 10;
+      },
       message: "Mobile number must be at least 10 characters long",
     },
   },
-  emailAddress: { type: String },
-  educationLevel: { type: String },
+  email_address: { type: String },
+  education_level: { type: String },
   occupation: { type: String },
-  annualSalary: {
-    type: Number,
-    required: true,
-    validate: {
-      validator: validateAmount,
-      message: "Amount cannot be less than 1",
-    },
-  },
-  addressStreet: { type: String },
-  addressCity: { type: String },
-  addressCountry: { type: String },
-  loanType: { type: String },
-  loanAmount: {
-    type: Number,
-    required: true,
-    validate: {
-      validator: validateAmount,
-      message: "Amount cannot be less than 1",
-    },
-  },
+  annual_salary: { type: Number, min: 1 },
+  address_street: { type: String },
+  address_city: { type: String },
+  address_country: { type: String },
+  loan_type: { type: String },
+  loan_amount: { type: Number, min: 1 },
   currency: { type: String },
-  loanPeriod: { type: Number },
-  paymentMethod: { type: String },
-  loanInterest: { type: Number },
-  loanStatus: { type: String },
-  loanSecurity: { type: String },
-  dateCreated: { type: Date, default: Date.now },
-  lastModified: { type: Date, default: Date.now },
-  isSynched: { type: Boolean, default: false },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
+  loan_period: { type: Number },
+  payment_mode: { type: String },
+  loan_interest: { type: Number },
+  loan_status: { type: String },
+  loan_security: { type: String },
+  date_created: { type: Date, default: Date.now },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
+  company_id: { type: Schema.Types.ObjectId, ref: "Company" },
 });
 
-const expenseSchema = new mongoose.Schema({
-  expenseId: { type: Number }, // Assuming expense_id is auto-generated elsewhere
-  dateCreated: { type: Date, default: Date.now },
-  item: { type: String, required: true },
-  quantity: {
-    type: Number,
-    required: true,
-    validate: {
-      validator: validateQuantity,
-      message: "Quantity cannot be negative",
-    },
-  },
-  amount: {
-    type: Number,
-    required: true,
-    validate: {
-      validator: validateAmount,
-      message: "Amount cannot be negative",
-    },
-  },
+const ExpenseSchema = new Schema({
+  expense_id: { type: Number },
+  date_created: { type: Date, default: Date.now },
+  item: { type: String },
+  quantity: { type: Number },
+  amount: { type: Number },
   currency: { type: String },
-  accountType: { type: String },
-  accountNumber: { type: Number },
-  branchId: { type: mongoose.Schema.Types.ObjectId, ref: "Branch" },
-  employeeId: { type: mongoose.Schema.Types.ObjectId, ref: "Employee" },
-  remarks: {
-    type: String,
-    required: true,
-    validate: { validator: validateRemarks, message: "Remark cannot be empty" },
-  },
-  isDeleted: { type: Boolean, default: false },
-  lastModified: { type: Date, default: Date.now },
-  isSynched: { type: Boolean, default: false },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
+  account_type: { type: String },
+  account_number: { type: Number },
+  branch_id: { type: Schema.Types.ObjectId, ref: "Branch" },
+  employee_id: { type: Schema.Types.ObjectId, ref: "Employee" },
+  remarks: { type: String },
+  is_deleted: { type: Boolean, default: false },
+  last_modified: { type: Date, default: Date.now },
+  is_synched: { type: Boolean, default: false },
+  company_id: { type: Schema.Types.ObjectId, ref: "Company" },
 });
 
-const exchangeRateSchema = new mongoose.Schema({
-  fromCurrency: {
-    type: String,
-    required: true,
-    validate: {
-      validator: validateCurrency,
-      message: "Currency must be 3 characters long",
-    },
-  },
-  toCurrency: {
-    type: String,
-    required: true,
-    validate: {
-      validator: validateCurrency,
-      message: "Currency must be 3 characters long",
-    },
-  },
+const ExchangeRateSchema = new Schema({
+  from_currency: { type: String, maxlength: 3 },
+  to_currency: { type: String, maxlength: 3 },
   rate: {
     type: Number,
-    required: true,
-    validate: { validator: validateRate, message: "Rate cannot be empty or 0" },
+    validate: {
+      validator: validateRate,
+    },
   },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
-  branchId: { type: mongoose.Schema.Types.ObjectId, ref: "Branch" },
+  company_id: { type: Schema.Types.ObjectId, ref: "Company" },
+  branch_id: { type: Schema.Types.ObjectId, ref: "Branch" },
   source: { type: String },
-  dateCreated: { type: Date, default: Date.now },
-  lastModified: { type: Date, default: Date.now },
-  isDeleted: { type: Boolean, default: false },
+  date_created: { type: Date, default: Date.now },
+  last_modified: { type: Date, default: Date.now },
+  is_deleted: { type: Boolean, default: false },
 });
 
 function validateMobileNumber(mobileNumber) {
@@ -659,24 +472,24 @@ export const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 export const ExchangeRate =
   mongoose.models.ExchangeRate ||
-  mongoose.model("ExchangeRate", exchangeRateSchema);
+  mongoose.model("ExchangeRate", ExchangeRateSchema);
 
 export const Expense =
-  mongoose.models.Expense || mongoose.model("Expense", expenseSchema);
+  mongoose.models.Expense || mongoose.model("Expense", ExpenseSchema);
 
-export const Loan = mongoose.models.Loan || mongoose.model("Loan", loanSchema);
+export const Loan = mongoose.models.Loan || mongoose.model("Loan", LoanSchema);
 
 export const MobileMoneyTransaction =
   mongoose.models.MobileMoneyTransaction ||
-  mongoose.model("MobileMoneyTransaction", mobileMoneyTransactionSchema);
+  mongoose.model("MobileMoneyTransaction", MobileMoneyTransactionSchema);
 
 export const CashTransaction =
   mongoose.models.CashTransaction ||
-  mongoose.model("CashTransaction", cashTransactionSchema);
+  mongoose.model("CashTransaction", CashTransactionSchema);
 
 export const MobileMoneyAccount =
   mongoose.models.MobileMoneyAccount ||
-  mongoose.model("MobileMoneyAccount", mobileMoneyAccountSchema);
+  mongoose.model("MobileMoneyAccount", MobileMoneyAccountSchema);
 
 export const MobileMoneyServiceProvider =
   mongoose.models.MobileMoneyServiceProvider ||
@@ -687,19 +500,19 @@ export const MobileMoneyServiceProvider =
 
 export const CashAccount =
   mongoose.models.CashAccount ||
-  mongoose.model("CashAccount", cashAccountSchema);
+  mongoose.model("CashAccount", CashAccountSchema);
 
 export const Currency =
-  mongoose.models.Currency || mongoose.model("Currency", currencySchema);
+  mongoose.models.Currency || mongoose.model("Currency", CurrencySchema);
 
 export const Employee =
-  mongoose.models.Employee || mongoose.model("Employee", employeeSchema);
+  mongoose.models.Employee || mongoose.model("Employee", EmployeeSchema);
 
 export const Branch =
-  mongoose.models.Branch || mongoose.model("Branch", branchSchema);
+  mongoose.models.Branch || mongoose.model("Branch", BranchSchema);
 
 export const Company =
-  mongoose.models.Company || mongoose.model("Company", companySchema);
+  mongoose.models.Company || mongoose.model("Company", CompanySchema);
 
 export const CompanyOwner =
   mongoose.models.CompanyOwner ||
