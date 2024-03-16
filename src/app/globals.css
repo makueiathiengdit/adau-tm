@@ -87,12 +87,6 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
 }
 
 a {
@@ -104,4 +98,22 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+.full-height {
+  height: 100vh;
+}
+
+.brand-color {
+  background-color: #50cb93;
+}
+
+.brand-blue {
+  /* background-color: #2667ff; */
+  /* background-color: #1e96fc; */
+  background-color: #0d41e1;
+}
+
+.brand-light-blue {
+  background-color: #a9d3ff;
 }
