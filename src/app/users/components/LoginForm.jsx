@@ -40,7 +40,7 @@ const LoginForm = () => {
             id="password"
             name="password"
             value={formData.password}
-            placeholder="Enter password e.g awetthon"
+            placeholder="password should be at least 6 characters"
             onChange={handleInputChange}
           />
         </div>

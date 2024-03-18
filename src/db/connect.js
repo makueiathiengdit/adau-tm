@@ -9,7 +9,7 @@ export async function connectToDB() {
       console.log("DB already connected.");
       return;
     } else {
-      const db = await mongoose.connect(process.env.LOCAL_DB_URL, {
+      const db = await mongoose.connect(process.env.MONGO_DB_URL, {
         connectTimeoutMS: 60000,
         socketTimeoutMS: 1000 * 60 * 110,
       });
