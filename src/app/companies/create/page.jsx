@@ -1,12 +1,12 @@
 import React from "react";
 import CompanyForm from "../components/CompanyForm";
+import BaseFormLayout from "@/app/components/Form/BaseFormLayout";
 
 const CreateCompanyPage = () => {
   return (
-    <div>
-      <h3 className="text-center fw-bold">Create Company</h3>
+    <BaseFormLayout title="New Company Form">
       <CompanyForm></CompanyForm>
-    </div>
+    </BaseFormLayout>
   );
 };
 

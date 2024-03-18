@@ -5,7 +5,7 @@ import "./globals.css";
 import SiderBar from "./components/siderbar/SiderBar";
 import BootStrapComponent from "./components/BootStrapComponent";
 import Header from "./components/siderbar/Header/page";
-
+import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -27,6 +27,7 @@ export default function RootLayout({ children }) {
             </div>
 
             <div className="p-2 flex-grow-1 border rounded border-opacity-10">
+              <Toaster />
               <div className="container">{children}</div>
             </div>
           </div>

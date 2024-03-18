@@ -3,7 +3,7 @@ import React from "react";
 import { branches } from "@/app/data/branches";
 const BranchList = () => {
   return (
-    <div>
+    <div className="mt-4">
       <table className="table table-hover">
         <caption>All Branches</caption>
         <thead>
@@ -22,10 +22,10 @@ const BranchList = () => {
             <tr key={id}>
               <th scope="row">{id + 1}</th>
               <td>{branch.name}</td>
-              <td>{branch.city}</td>
+              <td>{branch.address_city}</td>
               <td>{branch.manager}</td>
               <td>{branch.status}</td>
-              <td>{branch.date_create}</td>
+              <td>{branch.date_created}</td>
               <td>
                 <Link
                   href={`/branches/edit/${branch.id}`}

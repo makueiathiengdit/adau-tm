@@ -1,11 +1,16 @@
 import React from "react";
-
-const ProfilePage = () => {
+import Link from "next/link";
+const ProfileHomePage = () => {
   return (
-    <div>
-      <h3>My Profile</h3>
+    <div className="container text-center">
+      <div className="alert alert-primary">
+        <h3>No profile available now</h3>
+      </div>
+      <Link href="/profile/awet" className="btn btn-primary w-100">
+        View Default Profile
+      </Link>
     </div>
   );
 };
 
-export default ProfilePage;
+export default ProfileHomePage;

@@ -1,14 +1,12 @@
 import React from "react";
 import EditCompanyForm from "../../components/EditCompanyForm";
+import BaseFormLayout from "@/app/components/Form/BaseFormLayout";
 
 const EditCompanyPage = () => {
   return (
-    <div>
-      <div className="text-center">
-        <h3>Update Company </h3>
-      </div>
+    <BaseFormLayout title="Edit Company Form">
       <EditCompanyForm></EditCompanyForm>
-    </div>
+    </BaseFormLayout>
   );
 };
 

@@ -1,11 +1,11 @@
 import React from "react";
 
-const CashTransactionsPage = () => {
+const CashTransactionHomePage = () => {
   return (
     <div>
-      <h3>CashTransactionsPage</h3>
+      <h3>CashTransactionHomePage</h3>
     </div>
   );
 };
 
-export default CashTransactionsPage;
+export default CashTransactionHomePage;

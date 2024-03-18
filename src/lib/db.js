@@ -1,8 +1,8 @@
 import { connectToDB } from "@/db/connect";
 import { User } from "@/models/models";
 
-export async function fetUsers(params) {
-  connectToDB();
+export async function fetUsers() {
+  await connectToDB();
   try {
     const users = User.find();
     return users;

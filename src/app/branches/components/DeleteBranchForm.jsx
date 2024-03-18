@@ -21,6 +21,7 @@ const DeleteBranchForm = ({ branch }) => {
             Yes Delete
           </button>
         </div>
+        <div className="mt-2"></div>
       </div>
     </div>
   );

@@ -9,10 +9,10 @@ const BranchForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     mobile_number: "",
-    address: "",
-    city: "",
-    state: "",
-    country: "South Sudan",
+    address_street: "",
+    address_city: "",
+    address_state: "",
+    address_country: "South Sudan",
   });
 
   const handleInputChange = (event) => {
@@ -24,11 +24,11 @@ const BranchForm = () => {
     router.push("/branches");
   };
   return (
-    <div className="mt-3">
-      <form className="row g-3">
+    <>
+      <form className="row g-3 p-1">
         <div className="col-md-6">
-          <label htmlFor="name" className="form-label">
-            Branch Name
+          <label htmlFor="name" className="form-label text-black fw-bold">
+            Branch Name*
           </label>
           <input
             type="text"
@@ -41,7 +41,10 @@ const BranchForm = () => {
           />
         </div>
         <div className="col-md-6">
-          <label htmlFor="mobile_number" className="form-label">
+          <label
+            htmlFor="mobile_number"
+            className="form-label text-black fw-bold"
+          >
             Contact Number
           </label>
           <input
@@ -55,58 +58,70 @@ const BranchForm = () => {
           />
         </div>
         <div className="col-12">
-          <label htmlFor="address" className="form-label">
+          <label
+            htmlFor="address_street"
+            className="form-label text-black fw-bold"
+          >
             Address
           </label>
           <input
             type="text"
             className="form-control"
-            id="address"
-            value={formData.address}
+            id="address_street"
+            value={formData.address_street}
             placeholder="Shop No. 5, Shirikat"
-            name="address"
+            name="address_street"
             onChange={handleInputChange}
           />
         </div>
 
         <div className="col-md-4">
-          <label htmlFor="city" className="form-label">
+          <label
+            htmlFor="address_city"
+            className="form-label text-black fw-bold"
+          >
             City/Town
           </label>
           <input
             type="text"
             className="form-control"
-            id="city"
-            name="city"
-            value={formData.city}
+            id="address_city"
+            name="address_city"
+            value={formData.address_city}
             placeholder="Enter City or Town e.g Juba"
             onChange={handleInputChange}
           />
         </div>
         <div className="col-md-4">
-          <label htmlFor="city" className="form-label">
+          <label
+            htmlFor="address_state"
+            className="form-label text-black fw-bold"
+          >
             State
           </label>
           <input
             type="text"
             className="form-control"
-            id="city"
-            name="state"
-            value={formData.state}
+            id="address_state"
+            name="address_state"
+            value={formData.address_state}
             placeholder="Enter State e.g Central Equatoria"
             onChange={handleInputChange}
           />
         </div>
 
         <div className="col-md-4">
-          <label htmlFor="country" className="form-label">
+          <label
+            htmlFor="address_country"
+            className="form-label text-black fw-bold"
+          >
             Country
           </label>
           <select
-            id="country"
+            id="address_country"
             className="form-select"
-            name="country"
-            value={formData.country}
+            name="address_country"
+            value={formData.address_country}
             onChange={handleInputChange}
           >
             {countries.map((cntry, id) => (
@@ -124,13 +139,13 @@ const BranchForm = () => {
               type="submit"
               onClick={handleSubmit}
             >
-              Save
+              Create Branch
             </button>
           </div>
         </div>
         <div className="m-2"></div>
       </form>
-    </div>
+    </>
   );
 };
 

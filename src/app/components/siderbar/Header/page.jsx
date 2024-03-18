@@ -7,9 +7,9 @@ const Header = () => {
     <div>
       <nav className="navbar sticky-top bg-primary">
         <div className="container-fluid">
-          <a className="navbar-brand text-white" href="/">
+          <a className="navbar-brand text-white fw-bold" href="/">
             <Image
-              src="/logo.png"
+              src="/adau/3.png"
               alt="logo"
               width="45"
               height="45"

@@ -9,13 +9,15 @@ export async function connectToDB() {
       console.log("DB already connected.");
       return;
     } else {
-      const db = await mongoose.connect(process.env.MONGO_DB_URL);
+      const db = await mongoose.connect(process.env.LOCAL_DB_URL, {
+        connectTimeoutMS: 60000,
+        socketTimeoutMS: 1000 * 60 * 110,
+      });
       connection.is_connected = db.connections[0].readyState;
       console.log("DB connected");
     }
   } catch (error) {
     console.log("Error while trying to connect to db");
     console.log(error);
-    throw new Error(error);
   }
 }

@@ -1,14 +1,12 @@
 import React from "react";
 import EmployeeForm from "../components/EmployeeForm";
+import BaseFormLayout from "@/app/components/Form/BaseFormLayout";
 
 const CreateEmployeePage = () => {
   return (
-    <div className="container mt-4">
-      <div className="bg-primary-subtle rounded p-1">
-        <h3 className="text-center ">New Employee Form </h3>
-      </div>
+    <BaseFormLayout title="New Employee Form">
       <EmployeeForm></EmployeeForm>
-    </div>
+    </BaseFormLayout>
   );
 };
 

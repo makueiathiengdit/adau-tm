@@ -2,7 +2,10 @@
 
 import React, { useState } from "react";
 import { countries } from "@/app/data/countries";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 const EmployeeForm = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -19,12 +22,18 @@ const EmployeeForm = () => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
     console.log(event.target.name, event.target.value);
   };
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    toast.success("Employee created successfully");
+    // router.push("/employees");
+  };
   return (
-    <div className="container mt-3">
-      <form className="row g-3">
+    <>
+      <form className="row g-3 p-1">
         <div className="col-md-6">
-          <label htmlFor="first_name" className="form-label fw-bold">
-            First Name
+          <label htmlFor="first_name" className="form-label text-black fw-bold">
+            First Name*
           </label>
           <input
             type="text"
@@ -37,8 +46,8 @@ const EmployeeForm = () => {
           />
         </div>
         <div className="col-md-6">
-          <label htmlFor="last_name" className="form-label fw-bold">
-            Last Name
+          <label htmlFor="last_name" className="form-label text-black fw-bold">
+            Last Name*
           </label>
           <input
             type="text"
@@ -51,7 +60,7 @@ const EmployeeForm = () => {
           />
         </div>
         <div className="col-md-6">
-          <label htmlFor="dob" className="form-label fw-bold">
+          <label htmlFor="dob" className="form-label text-black fw-bold">
             Date of Birth
           </label>
           <input
@@ -65,7 +74,7 @@ const EmployeeForm = () => {
           />
         </div>
         <div className="col-md-6">
-          <label htmlFor="country" className="form-label fw-bold">
+          <label htmlFor="country" className="form-label text-black fw-bold">
             Gender
           </label>
           <select
@@ -79,8 +88,8 @@ const EmployeeForm = () => {
           </select>
         </div>
         <div className="col-md-6">
-          <label htmlFor="email" className="form-label fw-bold">
-            Email
+          <label htmlFor="email" className="form-label text-black fw-bold">
+            Email*
           </label>
           <input
             type="email"
@@ -93,7 +102,10 @@ const EmployeeForm = () => {
           />
         </div>
         <div className="col-md-6">
-          <label htmlFor="mobile_number" className="form-label fw-bold">
+          <label
+            htmlFor="mobile_number"
+            className="form-label text-black fw-bold"
+          >
             Mobile Number
           </label>
           <input
@@ -107,7 +119,7 @@ const EmployeeForm = () => {
           />
         </div>
         <div className="col-12">
-          <label htmlFor="address" className="form-label fw-bold">
+          <label htmlFor="address" className="form-label text-black fw-bold">
             Address
           </label>
           <input
@@ -121,7 +133,7 @@ const EmployeeForm = () => {
         </div>
 
         <div className="col-md-4">
-          <label htmlFor="city" className="form-label fw-bold">
+          <label htmlFor="city" className="form-label text-black fw-bold">
             City
           </label>
           <input
@@ -136,7 +148,7 @@ const EmployeeForm = () => {
         </div>
 
         <div className="col-md-4">
-          <label htmlFor="state" className="form-label fw-bold">
+          <label htmlFor="state" className="form-label text-black fw-bold">
             State
           </label>
           <input
@@ -151,8 +163,8 @@ const EmployeeForm = () => {
         </div>
 
         <div className="col-md-4">
-          <label htmlFor="country" className="form-label fw-bold">
-            country
+          <label htmlFor="country" className="form-label text-black fw-bold">
+            Country
           </label>
           <select
             id="country"
@@ -168,12 +180,17 @@ const EmployeeForm = () => {
         </div>
 
         <div className="col-12 p-2">
-          <button type="submit" className="btn btn-primary w-100">
-            Create
+          <button
+            type="submit"
+            className="btn btn-primary fw-bold w-100"
+            onClick={handleFormSubmit}
+          >
+            Create Employee
           </button>
         </div>
+        <div className="mt-2"></div>
       </form>
-    </div>
+    </>
   );
 };
 
