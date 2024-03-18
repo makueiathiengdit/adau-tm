@@ -68,7 +68,7 @@ const LoginForm = () => {
         <div className="col-12">
           <div className="d-grid gap-2 mt-2">
             <p>
-              Don't have an account?{" "}
+              Dont have an account?{" "}
               <Link href="/users/signup" className="text-primary">
                 Sign Up
               </Link>
